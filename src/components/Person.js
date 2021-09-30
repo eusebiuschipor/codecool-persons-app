@@ -14,22 +14,38 @@ function Person(props) {
     const sendDataURL = 'https://apps.loopevo.com/apis/students/add-new-student.php';
     const [error, setError] = useState('')
     const studentURL = 'http://apps.loopevo.com/apis/students/student.php'
+    const editDataURL= 'https://apps.loopevo.com/apis/students/update-student.php'
    
     const sendData = (e) => {
         e.preventDefault();
+
+        let url = sendDataURL;
+        let data = {firstName, lastName, email, age, city};
+        let mesage = "Ai adaugat o peroana cu succes"
+        
+        if (props.id) {
+            url = editDataURL;
+            data.id = props.id;
+            mesage = 'Ai editat cu succes o persoana'
+            
+        } 
         
         if (firstName.length > 0 && lastName.length >0 && email.length > 0) {   
             axios
-                .post(sendDataURL, {firstName, lastName, email, age, city})
-                .then(() => {})
+                .post(url, data)
+                .then(() => {
+                    if (!props.id) {
+                        setFirstName('')
+                        setLastName('')
+                        setEmail('')
+                    }
+                    
+                    setError('')
+                    alert(mesage)
+                })
                 .catch((error) => {
                     console.log(error)
                 });
-                setFirstName('')
-                setLastName('')
-                setEmail('')
-                setError('')
-                alert('ai adaugat cu succes o noua persoana')
         }else {
             setError('Te rog sa completezi toate campurile de mai sus')
         }
@@ -101,7 +117,7 @@ function Person(props) {
                 </Form.Group>
                          <div>{error} </div>   
                 <Button variant="primary" type="submit" onClick={sendData}>
-                    Add
+                    {props.id ? 'Edit' : 'Add'}
                 </Button>
             </Form>
         </div>
